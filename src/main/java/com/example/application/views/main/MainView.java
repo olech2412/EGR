@@ -1,5 +1,7 @@
 package com.example.application.views.main;
 
+import com.example.application.JPA.User;
+import com.example.application.JPA.repository.UserRepository;
 import com.example.application.components.ImprintDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -14,24 +16,31 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @PageTitle("EssensGetter-Registration")
 @Route(value = "")
-public class MainView extends HorizontalLayout {
+public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
     Logger logger = LoggerFactory.getLogger(MainView.class);
     private final String welcomeText = "Welcome to EssensGetter-Registration!";
     private EmailField emailField;
     private Button registerButton;
     private Checkbox accept;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public MainView() {
 
@@ -75,7 +84,6 @@ public class MainView extends HorizontalLayout {
     }
 
     private Component createFooter() {
-
         Button imprint = new Button("Impressum");
         imprint.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
         imprint.setIcon(new Icon("vaadin", "info-circle-o"));
@@ -94,7 +102,8 @@ public class MainView extends HorizontalLayout {
         privacy.setIcon(new Icon("vaadin", "bookmark-o"));
 
 
-        VerticalLayout footer = new VerticalLayout(new HorizontalLayout(imprint, privacy), new H6("Made with ❤️ by  christopho"), new Span("© 2023 EssensGetter-Registration"));
+        VerticalLayout footer = new VerticalLayout(new HorizontalLayout(imprint, privacy), new H6("Made with ❤️ " +
+                "by  christopho"), new Span("© 2023 EssensGetter-Registration"));
         footer.setAlignItems(Alignment.CENTER);
         footer.setAlignSelf(Alignment.CENTER);
         footer.setJustifyContentMode(JustifyContentMode.CENTER);
@@ -104,10 +113,14 @@ public class MainView extends HorizontalLayout {
 
     private VerticalLayout createInfoText() {
         Span infoText = new Span("Durch Anklicken des Buttons \"Registriere dich\" erklärst du dich damit einverstanden, " +
-                "dass dir täglich der Speiseplan der Mensa in der Schönauer Straße per E-Mail zuschickt. Du kannst dich jederzeit von diesem Newsletter abmelden.");
+                "dass dir täglich der Speiseplan der Mensa in der Schönauer Straße per E-Mail zuschickt. Du kannst dich " +
+                "jederzeit von diesem Newsletter abmelden.");
         infoText.getStyle().set("text-align", "center");
 
-        accept = new Checkbox("Ich stimme zu, dass meine personenbezogenen Daten - wie in der Datenschutzerklärung beschrieben - zur Zusendung der E-Mail verarbeitet werden. Diese Zustimmung kann ich jederzeit mit Wirkung für die Zukunft widerrufen.");
+        accept = new Checkbox("Ich stimme zu, dass meine personenbezogenen Daten - wie in der " +
+                "Datenschutzerklärung beschrieben - zur Zusendung der E-Mail verarbeitet werden. Diese Zustimmung " +
+                "kann ich jederzeit mit Wirkung für die Zukunft widerrufen."); // TODO: add link to privacy policy
+        accept.setRequiredIndicatorVisible(true);
         accept.getStyle().set("text-align", "center");
 
         VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, accept);
@@ -116,15 +129,21 @@ public class MainView extends HorizontalLayout {
         return infoLayout;
     }
 
+    /**
+     * Validates the input of the user
+     *
+     * @param email the email of the user
+     */
     private void validateInput(String email) {
-        Pattern special = Pattern.compile("[!#$%&*()=|<>?{}\\[\\]~]");
-        Matcher hasSpecial = special.matcher(email);
-        if (!email.isEmpty() && !hasSpecial.find() && !emailField.isInvalid()) {
+        Pattern special = Pattern.compile("[!#$%&*()=|<>?{}\\[\\]~]"); // regex for special characters
+        Matcher hasSpecial = special.matcher(email); // checks if the email contains special characters
+        if (!email.isEmpty() && !hasSpecial.find() && !emailField.isInvalid()) { // if the email is not empty and does not contain special characters and is valid
             if(email.length() >= 255) {
                 if (accept.getValue()) {
-                    Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!", 3000);
+                    Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 3000);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     notification.open();
+                    createRegistratedUser(email);
                 } else {
                     Notification notification = new Notification("Bitte stimme der Datenschutzerklärung zu", 3000, Notification.Position.BOTTOM_START);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -142,4 +161,22 @@ public class MainView extends HorizontalLayout {
         }
     }
 
+    /**
+     * Save User in Database
+     * User is not enabled because he didnt verified the email
+     * @param email
+     */
+    private void createRegistratedUser(String email) {
+        userRepository.save(new User(email, false)); // save the user in the database, not enabled because he didnt verified the email
+    }
+
+    /**
+     * log an access on the website
+     * IP and information about the webbrowser is logged
+     * @param beforeEnterEvent
+     */
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        logger.info("User accessed the main page: " + UI.getCurrent().getSession().getBrowser().getBrowserApplication() + " IP: " + UI.getCurrent().getSession().getBrowser().getAddress());
+    }
 }
