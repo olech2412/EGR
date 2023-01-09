@@ -119,6 +119,7 @@
     "@vaadin/virtual-list": "23.3.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
+    "line-awesome": "1.3.0",
     "lit": "2.4.1",
     "proj4": "2.8.0"
   },
@@ -257,7 +258,8 @@
     "@vaadin/multi-select-combo-box": "$@vaadin/multi-select-combo-box",
     "proj4": "$proj4",
     "@vaadin/tabsheet": "$@vaadin/tabsheet",
-    "@vaadin/tooltip": "$@vaadin/tooltip"
+    "@vaadin/tooltip": "$@vaadin/tooltip",
+    "line-awesome": "$line-awesome"
   },
   "vaadin": {
     "dependencies": {
@@ -378,6 +380,7 @@
       "@vaadin/virtual-list": "23.3.2",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
+      "line-awesome": "1.3.0",
       "lit": "2.4.1",
       "proj4": "2.8.0"
     },
@@ -397,6 +400,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "207bb5db873cbc214d522d2be910ec64d3cc1928e1899b1eb522edfbfa070416"
+    "hash": "9d779c0d92cc76059dae00d7b0f3c631f63d5ce91a23210927c2833e49d36d37"
   }
 }
