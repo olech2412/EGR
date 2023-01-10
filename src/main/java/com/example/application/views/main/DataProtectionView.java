@@ -9,8 +9,11 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.PermitAll;
+
 @PageTitle("EssensGetter-Registration-Datenschutz")
 @Route(value = "datenschutzerklärung")
+@PermitAll
 public class DataProtectionView extends VerticalLayout implements BeforeEnterObserver  {
 
     Logger logger = LoggerFactory.getLogger(DataProtectionView.class);
