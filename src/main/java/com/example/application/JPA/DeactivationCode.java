@@ -10,8 +10,15 @@ public class DeactivationCode {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-
     private String code;
+
+    public DeactivationCode(String code) {
+        this.code = code;
+    }
+
+    public DeactivationCode() {
+
+    }
 
     public Long getId() {
         return id;

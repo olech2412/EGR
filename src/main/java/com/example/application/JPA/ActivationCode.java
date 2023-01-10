@@ -9,8 +9,15 @@ public class ActivationCode {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-
     private String code;
+
+    public ActivationCode(String code) {
+        this.code = code;
+    }
+
+    public ActivationCode() {
+
+    }
 
     public Long getId() {
         return id;
