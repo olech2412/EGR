@@ -6,6 +6,7 @@ import com.example.application.JPA.MailUser;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
+import com.example.application.email.Mailer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
@@ -31,8 +32,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import javax.annotation.security.PermitAll;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +65,6 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     private DeactivationCodeRepository deactivationCodeRepository;
 
     public MainView() {
-        setMargin(true);
 
         VerticalLayout mainLayout = init();
 
@@ -66,14 +72,11 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
         mainLayout.setHeight(100f, Unit.PERCENTAGE);
         mainLayout.setAlignItems(Alignment.CENTER);
 
-        SystemMessagesProvider systemMessagesProvider = new SystemMessagesProvider() {
-            @Override
-            public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
-                CustomizedSystemMessages messages = new CustomizedSystemMessages();
-                messages.setSessionExpiredNotificationEnabled(true);
-                messages.setSessionExpiredURL("https://erg.olech2412.de/login");
-                return messages;
-            }
+        SystemMessagesProvider systemMessagesProvider = systemMessagesInfo -> {
+            CustomizedSystemMessages messages = new CustomizedSystemMessages();
+            messages.setSessionExpiredNotificationEnabled(true);
+            messages.setSessionExpiredURL("https://erg.olech2412.de/login");
+            return messages;
         };
 
         VaadinSession.getCurrent().getSession().setMaxInactiveInterval(10*60);
@@ -112,7 +115,10 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
             logger.info("Register button clicked");
             try {
                 validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue());
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException | IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (MessagingException ex) {
+                logger.error("Error while sending email", ex);
                 throw new RuntimeException(ex);
             }
         });
@@ -182,7 +188,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email the email of the user
      */
-    private void validateInput(String email, String firstname, String lastname) throws InterruptedException {
+    private void validateInput(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
         Pattern specialEmail = Pattern.compile("[!#$%&*()=|<>?{}\\[\\]~]"); // regex for special characters
         Pattern special = Pattern.compile("[!#$%&*@()=|<>?{}\\[\\]~]");
         Matcher hasSpecial = specialEmail.matcher(email); // checks if the email contains special characters
@@ -237,20 +243,23 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      * User is not enabled because he didnt verified the email
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname) throws InterruptedException {
+    private void createRegistratedUser(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
         ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
         mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode)); // save the user in the database, not enabled because he didnt verified the email
 
-
         logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
-        Notification notification = new Notification("Alles erledigt :). Du wirst nun abgemeldet...", 6000);
+
+        Mailer mailer = new Mailer();
+        mailer.sendActivationEmail(firstname, email,
+                activationCode.getCode(), deactivationCode.getCode());
+        logger.info("Mail was sent successfully");
+
+        Notification notification = new Notification("Alles erledigt :). Du kannst die Seite nun verlassen", 6000);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         notification.open();
-        Thread.sleep(6000);
-        VaadinSession.getCurrent().getSession().invalidate();
     }
 
     /**
