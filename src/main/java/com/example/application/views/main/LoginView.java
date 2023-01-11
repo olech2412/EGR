@@ -20,8 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private LoginForm login = new LoginForm();
+    public LoginView() {
 
-    public LoginView(UsersRepository usersRepository) {
         addClassName("login-view");
         setSizeFull();
 

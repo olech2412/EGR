@@ -11,20 +11,25 @@ public class MailUser {
     private Long id;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
-
+    @OneToOne
+    private ActivationCode activationCode;
+    @OneToOne
+    private DeactivationCode deactivationCode;
     private String firstname;
-
     private String lastname;
     private boolean enabled;
 
     public MailUser() {
     }
 
-    public MailUser(String email, String firstname, String lastname, boolean enabled) {
+    public MailUser(String email, String firstname, String lastname,
+                    boolean enabled, ActivationCode activationCode, DeactivationCode deactivationCode) {
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.enabled = enabled;
+        this.activationCode = activationCode;
+        this.deactivationCode = deactivationCode;
     }
 
     public Long getId() {
@@ -56,6 +61,18 @@ public class MailUser {
     }
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+    public ActivationCode getActivationCode() {
+        return activationCode;
+    }
+    public void setActivationCode(ActivationCode activationCode) {
+        this.activationCode = activationCode;
+    }
+    public DeactivationCode getDeactivationCode() {
+        return deactivationCode;
+    }
+    public void setDeactivationCode(DeactivationCode deactivationCode) {
+        this.deactivationCode = deactivationCode;
     }
 
     @Override

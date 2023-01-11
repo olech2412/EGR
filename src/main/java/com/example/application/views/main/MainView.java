@@ -1,7 +1,12 @@
 package com.example.application.views.main;
 
+import com.example.application.JPA.ActivationCode;
+import com.example.application.JPA.DeactivationCode;
 import com.example.application.JPA.MailUser;
+import com.example.application.JPA.repository.ActivationCodeRepository;
+import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
+import com.example.application.email.Mailer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
@@ -22,11 +27,19 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import javax.annotation.security.PermitAll;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +49,7 @@ import java.util.regex.Pattern;
 public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
     Logger logger = LoggerFactory.getLogger(MainView.class);
-    private final String welcomeText = "Welcome to EssensGetter-Registration!";
+    private final String welcomeText = "Welcome to <EGR>";
     private EmailField emailField;
     private TextField firstName;
     private TextField lastName;
@@ -45,14 +58,31 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     @Autowired
     private MailUserRepository mailUserRepository;
 
+    @Autowired
+    private ActivationCodeRepository activationCodeRepository;
+
+    @Autowired
+    private DeactivationCodeRepository deactivationCodeRepository;
+
     public MainView() {
-        setMargin(true);
 
         VerticalLayout mainLayout = init();
 
         mainLayout.setWidth(100f, Unit.PERCENTAGE);
         mainLayout.setHeight(100f, Unit.PERCENTAGE);
         mainLayout.setAlignItems(Alignment.CENTER);
+
+        SystemMessagesProvider systemMessagesProvider = systemMessagesInfo -> {
+            CustomizedSystemMessages messages = new CustomizedSystemMessages();
+            messages.setSessionExpiredNotificationEnabled(true);
+            messages.setSessionExpiredURL("https://erg.olech2412.de/login");
+            return messages;
+        };
+
+        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(10*60);
+        UI.getCurrent().getSession().getSession().setMaxInactiveInterval(10*60);
+        VaadinService.getCurrent().setSystemMessagesProvider(systemMessagesProvider);
+
         add(mainLayout);
     }
 
@@ -83,12 +113,26 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
         registerButton.addClickListener(e -> {
             logger.info("Register button clicked");
-            validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue());
+            try {
+                validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue());
+            } catch (InterruptedException | IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (MessagingException ex) {
+                logger.error("Error while sending email", ex);
+                throw new RuntimeException(ex);
+            }
         });
         registerButton.addClickShortcut(Key.ENTER);
 
         H1 header = new H1(welcomeText);
-        VerticalLayout mainLayout = new VerticalLayout(header); // the mainlayout is the layout of the whole page
+        StreamResource logoStream = new StreamResource("egr_logo.png", () -> getClass().getResourceAsStream("/static/img/egr_logo.png"));
+        Image logoImage = new Image(logoStream, "Logo");
+        HorizontalLayout image = new HorizontalLayout(logoImage);
+        image.setWidth(100f, Unit.PERCENTAGE);
+        image.setAlignItems(Alignment.START);
+        image.setSpacing(false);
+
+        VerticalLayout mainLayout = new VerticalLayout(image, header); // the mainlayout is the layout of the whole page
         FormLayout formLayout = new FormLayout(firstName, lastName, emailField);
         formLayout.setColspan(emailField,2);
         VerticalLayout inputLayout = new VerticalLayout(formLayout, createInfoText(),
@@ -144,7 +188,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email the email of the user
      */
-    private void validateInput(String email, String firstname, String lastname) {
+    private void validateInput(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
         Pattern specialEmail = Pattern.compile("[!#$%&*()=|<>?{}\\[\\]~]"); // regex for special characters
         Pattern special = Pattern.compile("[!#$%&*@()=|<>?{}\\[\\]~]");
         Matcher hasSpecial = specialEmail.matcher(email); // checks if the email contains special characters
@@ -199,9 +243,23 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      * User is not enabled because he didnt verified the email
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname) {
-        mailUserRepository.save(new MailUser(email, firstname, lastname, false)); // save the user in the database, not enabled because he didnt verified the email
+    private void createRegistratedUser(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
+        ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
+        DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
+        activationCodeRepository.save(activationCode);
+        deactivationCodeRepository.save(deactivationCode);
+        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode)); // save the user in the database, not enabled because he didnt verified the email
+
         logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
+
+        Mailer mailer = new Mailer();
+        mailer.sendActivationEmail(firstname, email,
+                activationCode.getCode(), deactivationCode.getCode());
+        logger.info("Mail was sent successfully");
+
+        Notification notification = new Notification("Alles erledigt :). Du kannst die Seite nun verlassen", 6000);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.open();
     }
 
     /**
