@@ -13,6 +13,7 @@ Das Tool ist unter der URL https://egr.olech2412.de erreichbar (nur mit Zugangsd
 3. Führen Sie `mvn clean install` aus, um die Abhängigkeiten zu installieren
 4. Starten Sie das Projekt mit `mvn spring-boot:run`
 5. Öffnen Sie Ihren Browser und navigieren Sie zu `http://localhost:8080`
+
   5.1 Der Port kann in den application.properties angepasst werden
 
 ## Registrierung
