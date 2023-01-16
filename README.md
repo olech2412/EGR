@@ -36,7 +36,7 @@ Der Deaktivierungscode ermöglicht somit eine sofortige Abmeldung vom Newsletter
 Durch klick auf den Link werden alle personenbezogenen Daten sofort gelöscht.
 
 ## Das Konzept
-![EssensGetter SoftwareArchitektur drawio](https://user-images.githubusercontent.com/76694468/212703594-940beb80-5eb2-4c86-8026-01444e6c8775.png)
+![EssensGetter SoftwareArchitektur drawio (1)](https://user-images.githubusercontent.com/76694468/212769942-63c4dd74-2664-4111-9736-429c27f669c5.png)
 
 ## Anmerkung
 
