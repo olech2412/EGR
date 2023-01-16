@@ -35,6 +35,9 @@ Falls der Benutzer seine Registrierung deaktivieren möchte, kann er dies mit de
 Der Deaktivierungscode ermöglicht somit eine sofortige Abmeldung vom Newsletter mit jeder E-Mail die an den Nutzer gesendet wird (da der EssensGetter 2.0 auf die selben Daten zurückgreift) sowie auch eine Abmeldung falls ein fremder die E-Mail Adresse registriert.
 Durch klick auf den Link werden alle personenbezogenen Daten sofort gelöscht.
 
+## Das Konzept
+![EssensGetter Softwarearchitektur](https://github.com/olech2412/EGR/blob/master/EssensGetter%20SoftwareArchitektur.drawio.png)
+
 ## Anmerkung
 
 Bitte beachten Sie, dass es sich hierbei um ein privates Studentenprojekt handelt und daher eventuelle Fehler oder Inkonsistenzen vorhanden sein können.
