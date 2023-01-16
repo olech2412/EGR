@@ -36,7 +36,7 @@ Der Deaktivierungscode ermöglicht somit eine sofortige Abmeldung vom Newsletter
 Durch klick auf den Link werden alle personenbezogenen Daten sofort gelöscht.
 
 ## Das Konzept
-![EssensGetter Softwarearchitektur](https://github.com/olech2412/EGR/blob/master/EssensGetter%20SoftwareArchitektur.drawio.png)
+
 
 ## Anmerkung
 
