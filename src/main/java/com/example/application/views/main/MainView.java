@@ -112,7 +112,6 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
         registerButton.setIcon(new Icon("vaadin", "envelope-open-o"));
 
         registerButton.addClickListener(e -> {
-            logger.info("Register button clicked");
             try {
                 validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue());
             } catch (InterruptedException | IOException ex) {
