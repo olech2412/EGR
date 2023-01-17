@@ -32,14 +32,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import javax.annotation.security.PermitAll;
 import javax.mail.*;
-import javax.mail.internet.*;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -139,7 +134,12 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
         inputLayout.setAlignItems(Alignment.CENTER);
         inputLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        inputLayout.setWidth(40f, Unit.PERCENTAGE);
+        if(isMobileDevice()){
+            inputLayout.setWidth(100f, Unit.PERCENTAGE);
+        }else {
+            inputLayout.setWidth(50f, Unit.PERCENTAGE);
+        }
+
 
         mainLayout.add(inputLayout, createFooter());
         return mainLayout;
@@ -269,5 +269,13 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         logger.info("User accessed the main page: " + UI.getCurrent().getSession().getBrowser().getBrowserApplication() + " IP: " + UI.getCurrent().getSession().getBrowser().getAddress());
+    }
+
+    /**
+     * Check if client is mobile or desktop
+     */
+    public  boolean isMobileDevice() {
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
+        return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }
 }
