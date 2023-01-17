@@ -307,7 +307,7 @@ public class StaticEmailText {
             "</tbody>" +
             "</table>" +
             "<p class=\"text-gray-700\" style=\"line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">" +
-            "Wenn du dich erneut registrieren möchtest klicke einfach auf \"Erneut registrieren\"" +
+            "Wenn du dich erneut registrieren möchtest klicke einfach auf \"Erneut registrieren\"." +
             "</p>" +
             "</div>" +
             "<table class=\"s-5 w-full\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;\" width=\"100%\">" +

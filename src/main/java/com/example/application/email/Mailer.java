@@ -91,13 +91,18 @@ public class Mailer {
         String activateUrl = "https://egr.olech2412.de/activate?code=" + activationCode;
         String deactivateUrl = "https://egr.olech2412.de/deactivate?code=" + deactivationCode;
         String msg = StaticEmailText.ACTIVATION_TEXT;
+        msg = msg.replaceFirst("%s", firstName);
+        msg = msg.replaceFirst("%s", activateUrl);
+        msg = msg.replaceFirst("%s", deactivateUrl);
 
-        return String.format(msg, firstName, activateUrl, deactivateUrl);
+        return msg;
     }
 
     private String getDeactivationText(String firstName) {
         String msg = StaticEmailText.DEACTIVATION_TEXT;
+        msg = msg.replaceFirst("%s", firstName);
+        msg = msg.replaceFirst("%s", "https://egr.olech2412.de");
 
-        return String.format(msg, firstName, "https://egr.olech2412.de");
+        return msg;
     }
 }
