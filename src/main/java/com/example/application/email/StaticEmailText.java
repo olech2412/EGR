@@ -296,7 +296,7 @@ public class StaticEmailText {
             "</tr>" +
             "</tbody>" +
             "</table>" +
-            "<p class=\"text-gray-700\" style=\"line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">du hast die Deaktivierung deines Accounts beauftragt. Wir haben alle deine Daten gel&#246scht. Du erhälst keine weiteren Emails mehr.</p>" +
+            "<p class=\"text-gray-700\" style=\"line-height: 24px; font-size: 16px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">du hast die Deaktivierung deines Accounts beauftragt. Wir haben alle deine Daten gelöscht. Du erhälst keine weiteren Emails mehr.</p>" +
             "<table class=\"s-3 w-full\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;\" width=\"100%\">" +
             "<tbody>" +
             "<tr>" +
