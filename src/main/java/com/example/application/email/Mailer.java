@@ -90,55 +90,19 @@ public class Mailer {
     private String getActivationText(String firstName, String activationCode, String deactivationCode) {
         String activateUrl = "https://egr.olech2412.de/activate?code=" + activationCode;
         String deactivateUrl = "https://egr.olech2412.de/deactivate?code=" + deactivationCode;
-        String msg =
-                "<body class=\"bg-light\">" +
-                    "<div class=\"container\">" +
-                        "<div class=\"card my-10\">" +
-                            "<div class=\"card-body\">" +
-                                "<h1 class=\"h3 mb-2\">Aktivierung deines EssensGetter-Newsletter-Accounts</h1>" +
-                                "<h5 class=\"text-teal-700\">Du bist nur noch einen Klick entfernt :0</h5>" +
-                                "<hr>" +
-                                "<div class=\"space-y-3\">" +
-                                    "<p class=\"text-gray-700\"> Moin, %s</p>" +
-                                    "<p class=\"text-gray-700\"> diese Email wurde angegeben, um den Essensgetter-Newsletter zu erhalten. </p>" +
-                                    "<p class=\"text-gray-700\"> Wenn du das nicht warst, kannst du diese Email ignorieren oder durch klick auf \"Ich war das nicht\" deine Daten bei mir löschen. </p>" +
-                                    "<a class=\"btn btn-danger\" href=\"%s\" target=\"_blank\">Ich war das nicht</a>" +
-                                    "<p class=\"text-gray-700\"> Falls doch, klicke auf \"Aktivieren\" um dich freizuschalten. </p>" +
-                                    "<a class=\"btn btn-primary\" href=\"%s\" target=\"_blank\">Aktivieren</a>" +
-                                    "<p class=\"text-gray-700\"> Mit besten Grüßen, </p>" +
-                                    "<p class=\"text-gray-700\"> dein EssensGetter </p>" +
-                                "</div>" +
-                                "<hr>" +
-                            "</div>" +
-                        "</div>" +
-                    "</div>" +
-                "</body>";
+        String msg = StaticEmailText.ACTIVATION_TEXT;
+        msg = msg.replaceFirst("%s", firstName);
+        msg = msg.replaceFirst("%s", activateUrl);
+        msg = msg.replaceFirst("%s", deactivateUrl);
 
-        return String.format(msg, firstName, deactivateUrl, activateUrl);
+        return msg;
     }
 
     private String getDeactivationText(String firstName) {
-        String msg =
-                    "<body class=\"bg-light\">" +
-                        "<div class=\"container\">" +
-                            "<div class=\"card my-10\">" +
-                                "<div class=\"card-body\">" +
-                                    "<h1 class=\"h3 mb-2\">Deaktivierung deines EssensGetter-Newsletter-Accounts</h1>" +
-                                        "<hr>" +
-                                            "<div class=\"space-y-3\">" +
-                                                "<p class=\"text-gray-700\"> Moin, %s</p>" +
-                                                "<p class=\"text-gray-700\"> schade das du uns verlässt. Deine persönlichen Daten wurden gelöscht. </p>" +
-                                                "<p class=\"text-gray-700\"> Falls du zurückkehren möchtest, kannst du dich jederzeit erneut registrieren. </p>" +
-                                                "<a class=\"btn btn-primary\" href=\"https://egr.olech2412.de/login\" target=\"_blank\">Erneut registrieren</a>" +
-                                                "<p class=\"text-gray-700\"> Mit besten Grüßen, </p>" +
-                                                "<p class=\"text-gray-700\"> dein EssensGetter </p>" +
-                                            "</div>" +
-                                        "<hr>" +
-                                "</div>" +
-                            "</div>" +
-                        "</div>" +
-                    "</body>";
+        String msg = StaticEmailText.DEACTIVATION_TEXT;
+        msg = msg.replaceFirst("%s", firstName);
+        msg = msg.replaceFirst("%s", "https://egr.olech2412.de");
 
-        return String.format(msg, firstName);
+        return msg;
     }
 }
