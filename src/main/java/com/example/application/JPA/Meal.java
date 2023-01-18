@@ -25,20 +25,22 @@ public class Meal {
     private LocalDate servingDate;
 
     private Integer responseCode;
+    private Double rating;
 
     public Meal() {
     }
 
-    public Meal(String name, String description, String price, String category, LocalDate servingDate) {
+    public Meal(String name, String description, String price, String category, LocalDate servingDate, Double rating) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
         this.servingDate = servingDate;
+        this.rating = rating;
     }
 
     @Override
     public String toString() {
-        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", servingDate=" + servingDate;
+        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", servingDate=" + servingDate + ", rating=" + rating;
     }
 }
