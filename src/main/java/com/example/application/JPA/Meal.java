@@ -34,12 +34,16 @@ public class Meal {
     public Meal() {
     }
 
-    public Meal(String name, String description, String price, String category, LocalDate servingDate, Double rating) {
+    public Meal(String name, String description, String price, String category, LocalDate servingDate) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
         this.servingDate = servingDate;
+        this.rating = 0.0;
+        this.votes = 0;
+        this.starsTotal = 0;
+
     }
 
     @Override
