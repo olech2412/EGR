@@ -3,11 +3,13 @@ package com.example.application.views.main;
 import com.example.application.JPA.MailUser;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
+import com.example.application.JPA.repository.VotingCodeRepository;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.StreamResource;
@@ -17,17 +19,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-@Route("activate")
-@PageTitle("Aktivierung")
+@Route("voting")
+@PageTitle("Voting")
 @AnonymousAllowed
-public class ActivationView extends Composite implements BeforeEnterObserver {
+public class VotingView extends Composite implements BeforeEnterObserver {
     private VerticalLayout layout;
     Logger logger = LoggerFactory.getLogger(ActivationView.class);
-    private ActivationCodeRepository activationCodeRepository;
+    private VotingCodeRepository votingCodeRepository;
     private MailUserRepository mailUserRepository;
 
-    public ActivationView(ActivationCodeRepository activationCodeRepository, MailUserRepository mailUserRepository) {
-        this.activationCodeRepository = activationCodeRepository;
+    public VotingView(VotingCodeRepository votingCodeRepository, MailUserRepository mailUserRepository) {
+        this.votingCodeRepository = votingCodeRepository;
         this.mailUserRepository = mailUserRepository;
     }
 
@@ -39,19 +41,19 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
 
             String code = params.get("code").get(0);
 
-            if (activationCodeRepository.findByCode(code).isEmpty() || code.equals("387UxMzB12")) {
-                StreamResource logoStream = new StreamResource("invaild_code.gif", () -> getClass().getResourceAsStream("/static/img/invalid_code.gif"));
-                Image logoImage = new Image(logoStream, "invalid_gif");
-                layout.add(logoImage, new Text("Code ist ungültig :(."));
+            if (votingCodeRepository.findByCode(code).isEmpty() || code.equals("xcfXGoXWdkWMk38")) {
+                StreamResource logoStream = new StreamResource("404.gif", () -> getClass().getResourceAsStream("/static/img/404.gif"));
+                Image logoImage = new Image(logoStream, "404_gif");
+                layout.add(logoImage, new Text("Code ist ungültig :(. Du hast wahrscheinlich schon abgestimmt."));
+                layout.setAlignItems(FlexComponent.Alignment.CENTER);
             } else {
                 StreamResource logoStream = new StreamResource("vaild_code.gif", () -> getClass().getResourceAsStream("/static/img/valid_code.gif"));
                 Image logoImage = new Image(logoStream, "valid_gif");
                 layout.add(logoImage, new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
-                MailUser activatedUser = mailUserRepository.findByActivationCode_Code(code);
-                activatedUser.setActivationCode(activationCodeRepository.findByCode("387UxMzB12").get(0));
-                activatedUser.setEnabled(true);
+                MailUser activatedUser = mailUserRepository.findByVotingCode_Code(code);
+                activatedUser.setVotingCode(votingCodeRepository.findByCode("xcfXGoXWdkWMk38").get(0));
                 mailUserRepository.save(activatedUser);
-                activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
+                votingCodeRepository.delete(votingCodeRepository.findByCode(code).get(0));
                 logger.info("User activated Account successfully: " + activatedUser.getEmail());
             }
         }catch (NullPointerException nullPointerException){

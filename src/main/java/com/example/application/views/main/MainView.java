@@ -6,6 +6,7 @@ import com.example.application.JPA.MailUser;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
+import com.example.application.JPA.repository.VotingCodeRepository;
 import com.example.application.email.Mailer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -58,6 +59,9 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
     @Autowired
     private DeactivationCodeRepository deactivationCodeRepository;
+
+    @Autowired
+    private VotingCodeRepository votingCodeRepository;
 
     public MainView() {
 
@@ -247,7 +251,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
-        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode)); // save the user in the database, not enabled because he didnt verified the email
+        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode, votingCodeRepository.findByCode("xcfXGoXWdkWMk38").get(0))); // save the user in the database, not enabled because he didnt verified the email
 
         logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
 
