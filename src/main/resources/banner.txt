@@ -4,6 +4,8 @@ __  __/   _  / __  __  /_/ /
 _  /___   / /_/ /  _  _, _/ 
 /_____/   \____/   /_/ |_|  
                             
-developed by christopho
-${application.title} ${application.version}
-Powered by Spring Boot ${spring-boot.version}
+Developed by: christopho
+${AnsiColor.BRIGHT_GREEN}Powered by: Spring Boot${spring-boot.formatted-version} ${AnsiColor.DEFAULT}
+More Information: https://github.com/olech2412/EGR
+Report an issue: https://github.com/olech2412/EGR/issues
+Visit <EGR>: https://egr.olech2412.de
