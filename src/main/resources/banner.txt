@@ -9,3 +9,4 @@ ${AnsiColor.BRIGHT_GREEN}Powered by: Spring Boot${spring-boot.formatted-version}
 More Information: https://github.com/olech2412/EGR
 Report an issue: https://github.com/olech2412/EGR/issues
 Visit <EGR>: https://egr.olech2412.de
+${AnsiColor.BRIGHT_GREEN}EGR is running!${AnsiColor.DEFAULT}
