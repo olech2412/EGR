@@ -6,7 +6,6 @@ import com.example.application.JPA.MailUser;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
-import com.example.application.JPA.repository.VotingCodeRepository;
 import com.example.application.email.Mailer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -61,8 +60,6 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     @Autowired
     private DeactivationCodeRepository deactivationCodeRepository;
 
-    @Autowired
-    private VotingCodeRepository votingCodeRepository;
 
     public MainView() {
 
@@ -203,10 +200,16 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
                         && !firstName.isEmpty() && !lastName.isEmpty()) { // same step for lastname and firstname
                     if (mailUserRepository.findByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
-                            Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
-                            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                            notification.open();
-                            createRegistratedUser(email, firstname, lastname);
+                            try {
+                                createRegistratedUser(email, firstname, lastname);
+                                Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
+                                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                                notification.open();
+                            } catch (Exception e) {
+                                logger.error("Error while creating Account: ", e);
+                                logger.error("User input: " + email + " " + firstname + " " + lastname);
+                                throw new RuntimeException(e);
+                            }
                         } else {
                             Notification notification = new Notification("Bitte stimme der Datenschutzerklärung zu", 3000, Notification.Position.BOTTOM_START);
                             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -248,12 +251,12 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
+    private void createRegistratedUser(String email, String firstname, String lastname) throws MessagingException, IOException {
         ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
-        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode, votingCodeRepository.findByCode("xcfXGoXWdkWMk38").get(0))); // save the user in the database, not enabled because he didnt verified the email
+        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode)); // save the user in the database, not enabled because he didnt verified the email
 
         logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
 

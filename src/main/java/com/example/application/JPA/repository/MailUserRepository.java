@@ -11,8 +11,6 @@ public interface MailUserRepository extends CrudRepository<MailUser, Long> {
 
     MailUser findByActivationCode_Code(String code);
 
-    MailUser findByVotingCode_Code(String code);
-
     MailUser findByDeactivationCode_Code(String code);
 
     /**
