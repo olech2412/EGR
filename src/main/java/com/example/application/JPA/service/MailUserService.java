@@ -15,9 +15,10 @@ public class MailUserService {
 
     /**
      * Saves a meal to the database
+     *
      * @return enabled mail users
      */
-    public Iterable<MailUser> findAllUsersThatAreEnabled(){
+    public Iterable<MailUser> findAllUsersThatAreEnabled() {
         return mailUserRepository.findUsersByEnabled(true);
     }
 }

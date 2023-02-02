@@ -14,7 +14,7 @@ import javax.annotation.security.PermitAll;
 @PageTitle("EssensGetter-Registration-Datenschutz")
 @Route(value = "datenschutzerklärung")
 @PermitAll
-public class DataProtectionView extends VerticalLayout implements BeforeEnterObserver  {
+public class DataProtectionView extends VerticalLayout implements BeforeEnterObserver {
 
     Logger logger = LoggerFactory.getLogger(DataProtectionView.class);
 
@@ -202,7 +202,6 @@ public class DataProtectionView extends VerticalLayout implements BeforeEnterObs
                 "Datenschutzerklärung entnehmen.")));
 
     }
-
 
 
     @Override

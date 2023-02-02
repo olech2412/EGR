@@ -9,6 +9,7 @@ public interface UsersRepository extends CrudRepository<Users, Long> {
 
     /**
      * Finds all enabled users
+     *
      * @param enabled
      * @return
      */

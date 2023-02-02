@@ -32,8 +32,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.annotation.security.PermitAll;
-import javax.mail.*;
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,8 +44,8 @@ import java.util.regex.Pattern;
 @PermitAll
 public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
-    Logger logger = LoggerFactory.getLogger(MainView.class);
     private final String welcomeText = "Welcome to <EGR>";
+    Logger logger = LoggerFactory.getLogger(MainView.class);
     private EmailField emailField;
     private TextField firstName;
     private TextField lastName;
@@ -75,8 +76,8 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
             return messages;
         };
 
-        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(10*60);
-        UI.getCurrent().getSession().getSession().setMaxInactiveInterval(10*60);
+        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(10 * 60);
+        UI.getCurrent().getSession().getSession().setMaxInactiveInterval(10 * 60);
         VaadinService.getCurrent().setSystemMessagesProvider(systemMessagesProvider);
 
         add(mainLayout);
@@ -129,15 +130,15 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
         VerticalLayout mainLayout = new VerticalLayout(image, header); // the mainlayout is the layout of the whole page
         FormLayout formLayout = new FormLayout(firstName, lastName, emailField);
-        formLayout.setColspan(emailField,2);
+        formLayout.setColspan(emailField, 2);
         VerticalLayout inputLayout = new VerticalLayout(formLayout, createInfoText(),
                 registerButton); // the inputlayout is the layout of the input fields
 
         inputLayout.setAlignItems(Alignment.CENTER);
         inputLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        if(isMobileDevice()){
+        if (isMobileDevice()) {
             inputLayout.setWidth(100f, Unit.PERCENTAGE);
-        }else {
+        } else {
             inputLayout.setWidth(50f, Unit.PERCENTAGE);
         }
 
@@ -193,11 +194,11 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
         Pattern special = Pattern.compile("[!#$%&*@()=|<>?{}\\[\\]~]");
         Matcher hasSpecial = specialEmail.matcher(email); // checks if the email contains special characters
         if (!email.isEmpty() && !hasSpecial.find() && !emailField.isInvalid()) { // if the email is not empty and does not contain special characters and is valid
-            if(email.length() <= 254) {
-                if(firstName.getValue().length() <= 255 && lastName.getValue().length() <= 255
+            if (email.length() <= 254) {
+                if (firstName.getValue().length() <= 255 && lastName.getValue().length() <= 255
                         && !special.matcher(firstname).find() && !special.matcher(lastname).find()
                         && !firstName.isEmpty() && !lastName.isEmpty()) { // same step for lastname and firstname
-                    if(mailUserRepository.findByEmail(email).isEmpty()) {
+                    if (mailUserRepository.findByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
                                 createRegistratedUser(email, firstname, lastname);
@@ -214,7 +215,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
                             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                             notification.open();
                         }
-                    }else{
+                    } else {
                         Notification notification = new Notification("Hmm... diese E-Mail scheint bereits registriert zu sein", 3000);
                         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                         notification.open();
@@ -222,13 +223,13 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
                         emailField.setInvalid(true);
                         logger.warn("Email is already registered: " + email);
                     }
-                }else {
+                } else {
                     Notification notification = new Notification("Überprüfe die Eingabe des Vor- oder Nachnamen", 3000, Notification.Position.BOTTOM_START);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.open();
-                    if(firstName.getValue().length() > 255 || special.matcher(firstname).find() || firstname.isEmpty()){
+                    if (firstName.getValue().length() > 255 || special.matcher(firstname).find() || firstname.isEmpty()) {
                         firstName.setInvalid(true);
-                    }else{
+                    } else {
                         lastName.setInvalid(true);
                     }
                 }
@@ -247,6 +248,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     /**
      * Save User in Database
      * User is not enabled because he didnt verified the email
+     *
      * @param email
      */
     private void createRegistratedUser(String email, String firstname, String lastname) throws MessagingException, IOException {
@@ -271,6 +273,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     /**
      * log an access on the website
      * IP and information about the webbrowser is logged
+     *
      * @param beforeEnterEvent
      */
     @Override
@@ -281,7 +284,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     /**
      * Check if client is mobile or desktop
      */
-    public  boolean isMobileDevice() {
+    public boolean isMobileDevice() {
         WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
         return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }

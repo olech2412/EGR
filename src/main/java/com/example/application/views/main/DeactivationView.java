@@ -11,7 +11,10 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.slf4j.Logger;
@@ -25,13 +28,17 @@ import java.util.Map;
 @PageTitle("Deaktivierung")
 @AnonymousAllowed
 public class DeactivationView extends Composite implements BeforeEnterObserver {
-    private VerticalLayout layout;
     Logger logger = LoggerFactory.getLogger(DeactivationView.class);
-    private DeactivationCodeRepository deactivationCodeRepository;
-    private MailUserRepository mailUserRepository;
-    public DeactivationView(DeactivationCodeRepository deactivationCodeRepository, MailUserRepository mailUserRepository) {
+    private VerticalLayout layout;
+    private final DeactivationCodeRepository deactivationCodeRepository;
+    private final MailUserRepository mailUserRepository;
+
+    private final ActivationCodeRepository activationCodeRepository;
+
+    public DeactivationView(DeactivationCodeRepository deactivationCodeRepository, MailUserRepository mailUserRepository, ActivationCodeRepository activationCodeRepository) {
         this.deactivationCodeRepository = deactivationCodeRepository;
         this.mailUserRepository = mailUserRepository;
+        this.activationCodeRepository = activationCodeRepository;
     }
 
     @Override
@@ -52,6 +59,11 @@ public class DeactivationView extends Composite implements BeforeEnterObserver {
                 MailUser activatedUser = mailUserRepository.findByDeactivationCode_Code(code);
                 mailUserRepository.delete(activatedUser);
                 deactivationCodeRepository.delete(activatedUser.getDeactivationCode());
+
+                if (!activatedUser.getActivationCode().equals("387UxMzB12")) { // if user is not activated
+                    activationCodeRepository.delete(activatedUser.getActivationCode());
+                }
+
                 logger.info("User deactivated Account successfully: " + activatedUser.getEmail());
                 Mailer mailer = new Mailer();
                 mailer.sendDeactivationEmail(activatedUser.getFirstname(), activatedUser.getEmail());
