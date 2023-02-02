@@ -1,6 +1,6 @@
 package com.example.application.views.main;
 
-import com.example.application.JPA.MailUser;
+import com.example.application.JPA.entities.MailUser;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;

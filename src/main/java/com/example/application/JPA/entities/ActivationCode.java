@@ -1,7 +1,13 @@
-package com.example.application.JPA;
+package com.example.application.JPA.entities;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
+
+@Setter
+@Getter
 @Entity
 @Table(name = "activation_codes")
 public class ActivationCode {

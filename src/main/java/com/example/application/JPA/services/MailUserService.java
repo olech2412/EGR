@@ -1,6 +1,6 @@
-package com.example.application.JPA.service;
+package com.example.application.JPA.services;
 
-import com.example.application.JPA.MailUser;
+import com.example.application.JPA.entities.MailUser;
 import com.example.application.JPA.repository.MailUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,5 +20,13 @@ public class MailUserService {
      */
     public Iterable<MailUser> findAllUsersThatAreEnabled() {
         return mailUserRepository.findUsersByEnabled(true);
+    }
+
+    public void saveMailUser(MailUser mailUser) {
+        mailUserRepository.save(mailUser);
+    }
+
+    public void deleteMailUser(MailUser mailUser) {
+        mailUserRepository.delete(mailUser);
     }
 }

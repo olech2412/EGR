@@ -1,11 +1,13 @@
 package com.example.application.views.main;
 
-import com.example.application.JPA.ActivationCode;
-import com.example.application.JPA.DeactivationCode;
-import com.example.application.JPA.MailUser;
+import com.example.application.JPA.entities.ActivationCode;
+import com.example.application.JPA.entities.DeactivationCode;
+import com.example.application.JPA.entities.MailUser;
+import com.example.application.JPA.entities.mensen.*;
 import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.DeactivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
+import com.example.application.JPA.services.mensen.*;
 import com.example.application.email.Mailer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -14,6 +16,8 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -36,8 +40,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.security.PermitAll;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @PageTitle("EssensGetter-Registration")
 @Route(value = "")
@@ -53,15 +61,40 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     private Checkbox accept;
     @Autowired
     private MailUserRepository mailUserRepository;
-
     @Autowired
     private ActivationCodeRepository activationCodeRepository;
-
     @Autowired
     private DeactivationCodeRepository deactivationCodeRepository;
+    @Autowired
+    private Mensa_AcademicaService mensa_academicaService;
+    @Autowired
+    private Cafeteria_DittrichringService cafeteria_dittrichringService;
+    @Autowired
+    private Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService;
+    @Autowired
+    private Mensa_am_MedizincampusService mensa_am_medizincampusService;
+    @Autowired
+    private Mensa_am_ParkService mensa_am_parkService;
+    @Autowired
+    private Mensa_PeterssteinwegService mensa_peterssteinwegService;
+    @Autowired
+    private Mensa_Schoenauer_StrService mensa_schoenauer_strService;
+    @Autowired
+    private Mensa_TierklinikService mensa_tierklinikService;
+    @Autowired
+    private Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService;
 
 
-    public MainView() {
+    public MainView(Mensa_AcademicaService mensa_academicaService, Cafeteria_DittrichringService cafeteria_dittrichringService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService, Mensa_am_MedizincampusService mensa_am_medizincampusService, Mensa_am_ParkService mensa_am_parkService, Mensa_PeterssteinwegService mensa_peterssteinwegService, Mensa_Schoenauer_StrService mensa_schoenauer_strService, Mensa_TierklinikService mensa_tierklinikService, Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService) {
+        this.mensa_academicaService = mensa_academicaService;
+        this.cafeteria_dittrichringService = cafeteria_dittrichringService;
+        this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
+        this.mensa_am_medizincampusService = mensa_am_medizincampusService;
+        this.mensa_am_parkService = mensa_am_parkService;
+        this.mensa_peterssteinwegService = mensa_peterssteinwegService;
+        this.mensa_schoenauer_strService = mensa_schoenauer_strService;
+        this.mensa_tierklinikService = mensa_tierklinikService;
+        this.menseria_am_botanischen_gartenService = menseria_am_botanischen_gartenService;
 
         VerticalLayout mainLayout = init();
 
@@ -84,6 +117,23 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
     }
 
     private VerticalLayout init() {
+        List<Mensa> mensas = new ArrayList<>();
+        mensas.add(mensa_academicaService.getMensa());
+        mensas.add(cafeteria_dittrichringService.getMensa());
+        mensas.add(mensa_am_elsterbeckenService.getMensa());
+        mensas.add(mensa_am_medizincampusService.getMensa());
+        mensas.add(mensa_am_parkService.getMensa());
+        mensas.add(mensa_peterssteinwegService.getMensa());
+        mensas.add(mensa_schoenauer_strService.getMensa());
+        mensas.add(mensa_tierklinikService.getMensa());
+        mensas.add(menseria_am_botanischen_gartenService.getMensa());
+
+        MultiSelectComboBox<Mensa> multiSelectComboBox = new MultiSelectComboBox<>();
+        multiSelectComboBox.setLabel("Wähle deine Mensen aus");
+        multiSelectComboBox.setItems(mensas);
+        multiSelectComboBox.setItemLabelGenerator(Mensa::getName);
+        multiSelectComboBox.setPlaceholder("Wähle deine Mensen aus");
+
         firstName = new TextField("Dein Vorname");
         firstName.setMaxLength(255);
         firstName.setRequired(true);
@@ -110,7 +160,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
 
         registerButton.addClickListener(e -> {
             try {
-                validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue());
+                validateInput(emailField.getValue(), firstName.getValue(), lastName.getValue(), multiSelectComboBox.getValue());
             } catch (InterruptedException | IOException ex) {
                 throw new RuntimeException(ex);
             } catch (MessagingException ex) {
@@ -129,8 +179,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
         image.setSpacing(false);
 
         VerticalLayout mainLayout = new VerticalLayout(image, header); // the mainlayout is the layout of the whole page
-        FormLayout formLayout = new FormLayout(firstName, lastName, emailField);
-        formLayout.setColspan(emailField, 2);
+        FormLayout formLayout = new FormLayout(firstName, lastName, emailField, multiSelectComboBox);
         VerticalLayout inputLayout = new VerticalLayout(formLayout, createInfoText(),
                 registerButton); // the inputlayout is the layout of the input fields
 
@@ -189,7 +238,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email the email of the user
      */
-    private void validateInput(String email, String firstname, String lastname) throws InterruptedException, MessagingException, IOException {
+    private void validateInput(String email, String firstname, String lastname, Set<Mensa> mensa) throws InterruptedException, MessagingException, IOException {
         Pattern specialEmail = Pattern.compile("[!#$%&*()=|<>?{}\\[\\]~]"); // regex for special characters
         Pattern special = Pattern.compile("[!#$%&*@()=|<>?{}\\[\\]~]");
         Matcher hasSpecial = specialEmail.matcher(email); // checks if the email contains special characters
@@ -201,7 +250,7 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
                     if (mailUserRepository.findByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname);
+                                createRegistratedUser(email, firstname, lastname, mensa);
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
@@ -251,12 +300,12 @@ public class MainView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname) throws MessagingException, IOException {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa) throws MessagingException, IOException {
         ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
-        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode)); // save the user in the database, not enabled because he didnt verified the email
+        mailUserRepository.save(new MailUser(email, firstname, lastname, false, activationCode, deactivationCode, new ArrayList<>(mensa))); // save the user in the database, not enabled because he didnt verified the email
 
         logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
 

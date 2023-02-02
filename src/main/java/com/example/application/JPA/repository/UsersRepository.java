@@ -1,6 +1,6 @@
 package com.example.application.JPA.repository;
 
-import com.example.application.JPA.authentification.Users;
+import com.example.application.JPA.entities.authentification.Users;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +14,4 @@ public interface UsersRepository extends CrudRepository<Users, Long> {
      * @return
      */
     Iterable<Users> findUsersByEnabled(Boolean enabled);
-
 }

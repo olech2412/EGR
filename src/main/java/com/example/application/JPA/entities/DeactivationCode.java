@@ -1,7 +1,12 @@
-package com.example.application.JPA;
+package com.example.application.JPA.entities;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "deactivation_codes")
 public class DeactivationCode {
@@ -18,22 +23,6 @@ public class DeactivationCode {
 
     public DeactivationCode() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
 }

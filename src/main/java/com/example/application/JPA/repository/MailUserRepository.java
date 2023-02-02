@@ -1,11 +1,14 @@
 package com.example.application.JPA.repository;
 
-import com.example.application.JPA.MailUser;
+import com.example.application.JPA.entities.MailUser;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MailUserRepository extends CrudRepository<MailUser, Long> {
+
 
     List<MailUser> findByEmail(String email);
 
@@ -20,4 +23,6 @@ public interface MailUserRepository extends CrudRepository<MailUser, Long> {
      * @return
      */
     Iterable<MailUser> findUsersByEnabled(Boolean enabled);
+
+
 }
