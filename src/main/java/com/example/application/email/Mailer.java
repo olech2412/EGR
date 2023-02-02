@@ -1,22 +1,11 @@
 package com.example.application.email;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Mailer {
@@ -24,6 +13,7 @@ public class Mailer {
     /**
      * Sends an email to the given address with the given subject and content.
      * For Activation
+     *
      * @param firstName
      * @param emailTarget
      * @param activationCode
@@ -58,6 +48,7 @@ public class Mailer {
     /**
      * Sends an email to the given address with the given subject and content.
      * For Deactivation
+     *
      * @param firstName
      * @param emailTarget
      * @throws MessagingException

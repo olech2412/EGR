@@ -1,7 +1,6 @@
 package com.example.application.views.main;
 
 import com.example.application.JPA.MailUser;
-import com.example.application.JPA.repository.ActivationCodeRepository;
 import com.example.application.JPA.repository.MailUserRepository;
 import com.example.application.JPA.repository.VotingCodeRepository;
 import com.vaadin.flow.component.Component;
@@ -11,11 +10,15 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +26,10 @@ import java.util.Map;
 @PageTitle("Voting")
 @AnonymousAllowed
 public class VotingView extends Composite implements BeforeEnterObserver {
-    private VerticalLayout layout;
     Logger logger = LoggerFactory.getLogger(ActivationView.class);
-    private VotingCodeRepository votingCodeRepository;
-    private MailUserRepository mailUserRepository;
+    private VerticalLayout layout;
+    private final VotingCodeRepository votingCodeRepository;
+    private final MailUserRepository mailUserRepository;
 
     public VotingView(VotingCodeRepository votingCodeRepository, MailUserRepository mailUserRepository) {
         this.votingCodeRepository = votingCodeRepository;
@@ -56,7 +59,7 @@ public class VotingView extends Composite implements BeforeEnterObserver {
                 votingCodeRepository.delete(votingCodeRepository.findByCode(code).get(0));
                 logger.info("User activated Account successfully: " + activatedUser.getEmail());
             }
-        }catch (NullPointerException nullPointerException){
+        } catch (NullPointerException nullPointerException) {
             logger.warn("User tried to navigate to ActivationView but there is no code");
             UI.getCurrent().navigate("login");
         }

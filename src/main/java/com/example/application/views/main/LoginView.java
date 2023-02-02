@@ -1,7 +1,5 @@
 package com.example.application.views.main;
 
-import com.example.application.JPA.authentification.Users;
-import com.example.application.JPA.repository.UsersRepository;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
@@ -12,14 +10,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Route("login")
 @PageTitle("Login")
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
-    private LoginForm login = new LoginForm();
+    private final LoginForm login = new LoginForm();
+
     public LoginView() {
 
         addClassName("login-view");
