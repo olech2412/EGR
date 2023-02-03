@@ -60,7 +60,7 @@ public class DeactivationView extends Composite implements BeforeEnterObserver {
                 mailUserRepository.delete(activatedUser);
                 deactivationCodeRepository.delete(activatedUser.getDeactivationCode());
 
-                if (!activatedUser.getActivationCode().equals("387UxMzB12")) { // if user is not activated
+                if (!activatedUser.getActivationCode().getCode().equals("387UxMzB12")) { // if user is not activated
                     activationCodeRepository.delete(activatedUser.getActivationCode());
                 }
 
